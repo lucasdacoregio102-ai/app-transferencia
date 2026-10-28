@@ -1,0 +1,40 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "PixEscrow Orchestrator Backend API",
+  "type": "module",
+  "main": "src/server.ts",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev",
+    "prisma:seed": "prisma db seed"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@bull-board/api": "^9.10.5",
+    "@bull-board/express": "^9.10.5",
+    "@prisma/client": "^5.21.0",
+    "bullmq": "^5.25.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1",
+    "ioredis": "^5.4.1",
+    "viem": "^2.21.32"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.20.5",
+    "prisma": "^5.21.0",
+    "tsx": "^4.19.1",
+    "typescript": "^5.6.3"
+  }
+}

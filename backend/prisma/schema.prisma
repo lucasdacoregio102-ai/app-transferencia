@@ -1,0 +1,63 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             String   @id @default(uuid())
+  cpf            String   @unique
+  email          String   @unique
+  walletAddress  String   @unique @map("wallet_address")
+  createdAt      DateTime @default(now()) @map("created_at")
+  buyingEscrows  Escrow[] @relation("BuyerEscrows")
+  sellingEscrows Escrow[] @relation("SellerEscrows")
+
+  @@map("users")
+}
+
+model Escrow {
+  id              String            @id @default(uuid())
+  onchainEscrowId BigInt?           @unique @map("onchain_escrow_id")
+  buyerId         String            @map("buyer_id")
+  sellerId        String            @map("seller_id")
+  amountUsdc      Decimal           @map("amount_usdc") @db.Decimal(18, 6)
+  status          TransactionStatus @default(PENDING)
+  createdAt       DateTime          @default(now()) @map("created_at")
+  buyer           User              @relation("BuyerEscrows", fields: [buyerId], references: [id])
+  seller          User              @relation("SellerEscrows", fields: [sellerId], references: [id])
+  transactions    Transaction[]
+
+  @@map("escrows")
+}
+
+model Transaction {
+  id          String            @id @default(uuid())
+  escrowId    String?           @map("escrow_id")
+  type        TransactionType
+  status      TransactionStatus @default(PENDING)
+  amount      Decimal           @db.Decimal(18, 6)
+  onchainHash String?           @map("onchain_hash")
+  pixEndToEnd String?           @map("pix_end_to_end")
+  createdAt   DateTime          @default(now()) @map("created_at")
+  escrow      Escrow?           @relation(fields: [escrowId], references: [id])
+
+  @@map("transactions")
+}
+
+enum TransactionType {
+  PIX_IN
+  PIX_OUT
+  ESCROW_DEPOSIT
+  ESCROW_RELEASE
+}
+
+enum TransactionStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  DISPUTED
+}
