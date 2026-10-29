@@ -6,6 +6,7 @@ import offrampRoutes from './routes/offrampRoutes.js';
 import { serverAdapter } from './config/bullBoard.js';
 import { basicAuth } from './middlewares/authMiddleware.js';
 import './workers/paymentWorker.js';
+import transactionRoutes from './routes/transactionRoutes.js';
 
 dotenv.config();
 
@@ -26,6 +27,7 @@ app.use('/admin/queues', basicAuth, (req, res, next) => {
 // Rotas públicas da aplicação
 app.use('/webhooks', webhookRoutes);
 app.use('/api', offrampRoutes);
+app.use('/api/transactions', transactionRoutes);
 
 app.listen(PORT, () => {
   console.log(`🚀 Servidor rodando na porta ${PORT}`);
