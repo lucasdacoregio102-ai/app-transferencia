@@ -15,8 +15,13 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
-// Rota do Bull-Board protegida por Basic Auth
-app.use('/admin/queues', basicAuth, serverAdapter.getRouter());
+// Rota do Bull-Board protegida por Basic Auth (com redirecionamento para a barra /)
+app.use('/admin/queues', basicAuth, (req, res, next) => {
+  if (req.originalUrl === '/admin/queues') {
+    return res.redirect('/admin/queues/');
+  }
+  next();
+}, serverAdapter.getRouter());
 
 // Rotas públicas da aplicação
 app.use('/webhooks', webhookRoutes);
