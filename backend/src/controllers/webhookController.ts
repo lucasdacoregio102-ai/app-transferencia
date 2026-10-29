@@ -17,13 +17,23 @@ export const handlePixWebhook = async (req: Request, res: Response) => {
       return res.status(404).json({ error: 'Usuário não encontrado para este CPF' });
     }
 
-    // Adiciona a tarefa na fila do BullMQ
-    await paymentQueue.add('process-onramp', {
-      endToEndId,
-      valor,
-      cpfPayer,
-    });
-
+// Adiciona a tarefa na fila do BullMQ com retenção de histórico para o Bull-Board
+await paymentQueue.add(
+  'process-onramp',
+  {
+    endToEndId,
+    valor,
+    cpfPayer,
+  },
+  {
+    removeOnComplete: {
+      count: 100, // Mantém os últimos 100 jobs concluídos visíveis no painel
+    },
+    removeOnFail: {
+      count: 100, // Mantém os últimos 100 jobs com falha no painel
+    },
+  }
+);
     console.log(`📥 Webhook recebido e enfileirado para o E2E: ${endToEndId}`);
 
     // Resposta imediata HTTP 202 (Accepted)
