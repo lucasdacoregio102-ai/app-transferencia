@@ -46,6 +46,16 @@ export const paymentWorker = new Worker(
       });
 
       console.log(`✅ Job On-Ramp concluído! Bloco: ${receipt.blockNumber} | Hash: ${txHash}`);
+
+      // 🛑 Dados salvos e exibidos no 'returnValue' do Bull-Board
+      return {
+        type: 'ON_RAMP',
+        status: 'COMPLETED',
+        txHash,
+        blockNumber: receipt.blockNumber.toString(), // Converte BigInt para string
+        endToEndId,
+        amount: valor,
+      };
     }
 
     // --------- PROCESSAMENTO DE OFF-RAMP ---------
@@ -64,6 +74,15 @@ export const paymentWorker = new Worker(
       });
 
       console.log(`✅ Job Off-Ramp concluído! Pix Out EndToEnd: ${pixOutEndToEnd}`);
+
+      // 🛑 Dados salvos e exibidos no 'returnValue' do Bull-Board
+      return {
+        type: 'OFF_RAMP',
+        status: 'COMPLETED',
+        pixOutEndToEnd,
+        amount: Number(amount),
+        burnTxHash: burnTxHash || null,
+      };
     }
   },
   { connection: redisConnection }
